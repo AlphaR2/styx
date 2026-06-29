@@ -1,0 +1,27 @@
+[package]
+name = "core"
+version = "0.1.0"
+edition = "2024" 
+
+[dependencies]
+styx_ingest = { package = "ingest", path = "../ingest" }
+solana-sdk        = { workspace = true }
+solana-rpc-client = { workspace = true }
+reqwest           = { workspace = true }
+jito-sdk-rust     = { workspace = true }
+tokio             = { workspace = true }
+futures           = { workspace = true }
+serde             = { workspace = true }
+serde_json        = { workspace = true }
+tracing           = { workspace = true }
+anyhow            = { workspace = true }
+thiserror         = { workspace = true }
+dotenv            = { workspace = true }
+base64            = { workspace = true }
+bincode           = { workspace = true }
+bs58              = { workspace = true }
+solana-compute-budget-interface = { workspace = true }
+solana-commitment-config        = { workspace = true }
+solana-system-interface         = { workspace = true }
+jup-ag-sdk = { workspace = true }
+

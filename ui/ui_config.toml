@@ -1,0 +1,4 @@
+base_color = "zinc"
+color_theme = "amber"
+base_path_components = "src/components"
+rtl = false

@@ -1,0 +1,7 @@
+/target
+/dist
+/style/output.css
+/node_modules
+/pnpm-lock.yaml
+/package.json
+tailwindcss

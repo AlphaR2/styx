@@ -1,0 +1,26 @@
+[build]
+target = "index.html"
+
+# Build Tailwind CSS before Trunk processes assets.
+# Uses the standalone Tailwind binary (no Node.js needed).
+# Download once: see instructions below.
+[[hooks]]
+stage = "pre_build"
+command = "./tailwindcss"
+command_arguments = ["-i", "style/tailwind.css", "-o", "style/output.css"]
+
+# Proxies /api/* to the local API server during development.
+# In production, axum serves both the UI and API from the same process,
+# so this proxy is only active during `trunk serve`.
+[[proxy]]
+rewrite = "/api"
+backend = "http://localhost:3000"
+
+# Proxy WebSocket connections so the browser can reach ws://localhost:3000/ws
+# via ws://localhost:8080/ws — no CORS issue, no hardcoded port in the UI code.
+# `ws = true` enables the upgrade; the /ws path in `backend` is preserved (not stripped).
+# The backend MUST use the ws:// scheme here — trunk's proxy client rejects http://
+# with `Url(UnsupportedUrlScheme)` for websocket backends.
+[[proxy]]
+backend = "ws://localhost:3000/ws"
+ws = true

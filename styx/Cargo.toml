@@ -1,0 +1,10 @@
+[package]
+name = "styx"
+version = "0.1.0"
+edition = "2024"
+description = "Solana execution SDK — dynamic Jito tip optimization, bundle lifecycle, and retry"
+
+[dependencies]
+styx_core   = { package = "core",   path = "../core" }
+styx_agent  = { package = "agent",  path = "../agent" }
+styx_ingest = { package = "ingest", path = "../ingest" }
