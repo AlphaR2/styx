@@ -46,6 +46,13 @@ pub enum NetworkEvent {
         message: String,
         ts_ms: u64,
     },
+    // Tip percentile floors from the Jito tip-floor API, in lamports.
+    TipFloor {
+        p25: u64,
+        p50: u64,
+        p75: u64,
+        p95: u64,
+    },
     // A raw log line tagged with a bundle_id, bridged straight from the tracing
     // subscriber so the UI mirrors the server logs verbatim for that transaction.
     ExecLog {

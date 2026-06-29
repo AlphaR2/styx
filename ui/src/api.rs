@@ -50,17 +50,6 @@ pub struct ExecuteResponse {
     pub lane: String,
 }
 
-// ── Session / deposit ─────────────────────────────────────────────────────
-
-#[derive(Deserialize, Clone, Debug)]
-pub struct SessionResponse {
-    pub session_token: String,
-    pub credits: u32,
-    pub deposit_lamports: u64,
-    pub created_at_ms: u64,
-    pub deposit_address: String,
-}
-
 // ── WebSocket events ──────────────────────────────────────────────────────
 
 #[derive(Deserialize, Debug, Clone)]
@@ -211,34 +200,6 @@ pub async fn fetch_tip_floor() -> Result<TipFloorSnapshot, String> {
         .json::<TipFloorSnapshot>().await.map_err(|e| e.to_string())
 }
 
-pub async fn post_bypass(code: &str) -> Result<SessionResponse, String> {
-    let body = serde_json::json!({"code": code});
-    let resp = Request::post("/api/bypass")
-        .header("Content-Type", "application/json")
-        .body(body.to_string()).map_err(|e| e.to_string())?
-        .send().await.map_err(|e| e.to_string())?;
-    if !resp.ok() {
-        return Err("Invalid bypass code".to_string());
-    }
-    resp.json::<SessionResponse>().await.map_err(|e| e.to_string())
-}
-
-pub async fn post_deposit_claim(session_token: &str) -> Result<SessionResponse, String> {
-    let body = serde_json::json!({"session_token": session_token});
-    let resp = Request::post("/api/deposit/claim")
-        .header("Content-Type", "application/json")
-        .body(body.to_string()).map_err(|e| e.to_string())?
-        .send().await.map_err(|e| e.to_string())?;
-    resp.json::<SessionResponse>().await.map_err(|e| e.to_string())
-}
-
-pub async fn fetch_session(token: &str) -> Result<SessionResponse, String> {
-    let resp = Request::get(&format!("/api/session/{}", token))
-        .send().await.map_err(|e| e.to_string())?;
-    if !resp.ok() { return Err("session not found".to_string()); }
-    resp.json::<SessionResponse>().await.map_err(|e| e.to_string())
-}
-
 // ── WebSocket ─────────────────────────────────────────────────────────────
 
 /// Build the absolute WebSocket URL for the live event stream.
@@ -287,9 +248,3 @@ pub fn format_utc_hms(ms: u64) -> String {
     format!("{:02}:{:02}:{:02}", h, m, s)
 }
 
-/// Generate a client-side session token from current timestamp.
-pub fn gen_session_token() -> String {
-    // Use the current time as entropy — good enough for a demo.
-    let ts = js_sys::Date::now() as u64;
-    format!("styx_{:x}", ts ^ 0xc0ffee42c0ffee42u64)
-}

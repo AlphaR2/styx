@@ -5,3 +5,4 @@ target/
 *keypair*.json
 wget-log
 *.log
+Cargo.lock

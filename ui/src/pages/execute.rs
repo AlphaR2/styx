@@ -23,8 +23,6 @@ pub fn ExecutePage() -> impl IntoView {
     let (error, set_error)     = signal(None::<String>);
     let (flow, set_flow)       = signal(Vec::<FlowStep>::new());
     let (mode, set_mode)       = signal("memo".to_string());
-    // "priority" = standard RPC + CU price; "jito" = Jito bundle lane.
-    // Fault injection is priority-lane only — when switching to jito we auto-reset to memo.
     let (lane, set_lane)       = signal("priority".to_string());
 
     spawn_local(async move {
@@ -106,11 +104,7 @@ pub fn ExecutePage() -> impl IntoView {
                                 "Priority Fee"
                             </button>
                             <button
-                                on:click=move |_| {
-                                    set_lane.set("jito".to_string());
-                                    // Fault injection is priority-only — reset to memo on jito
-                                    if mode.get() == "fault" { set_mode.set("memo".to_string()); }
-                                }
+                                on:click=move |_| set_lane.set("jito".to_string())
                                 class=move || format!(
                                     "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-mono font-medium transition-all duration-150 {}",
                                     if lane.get() == "jito" {
@@ -156,17 +150,14 @@ pub fn ExecutePage() -> impl IntoView {
                                 tag="Jupiter · 0.001 SOL → USDC"
                                 desc="A genuine Jupiter-routed swap. Watch the AI bid for priority, routing, and confirmation in real time."
                             />
-                            // Fault injection: only shown on priority lane
-                            {move || (lane.get() == "priority").then(|| view! {
-                                <ScenarioCard
-                                    selected=Signal::derive(move || mode.get() == "fault")
-                                    on_select=move |_| set_mode.set("fault".to_string())
-                                    icon="💥"
-                                    title="Fault injection"
-                                    tag="Stale blockhash · Priority lane only"
-                                    desc="Submits with an expired blockhash on purpose. The agent detects expiry, reasons about cause, refreshes, and resubmits — autonomously."
-                                />
-                            })}
+                            <ScenarioCard
+                                selected=Signal::derive(move || mode.get() == "fault")
+                                on_select=move |_| set_mode.set("fault".to_string())
+                                icon="💥"
+                                title="Fault injection"
+                                tag="Stale blockhash · AI retry demo"
+                                desc="Submits with an expired blockhash. The AI detects the failure, refreshes the blockhash, and resubmits autonomously."
+                            />
                         </div>
                     </div>
 
@@ -178,6 +169,7 @@ pub fn ExecutePage() -> impl IntoView {
                                 let l = lane.get();
                                 let m = mode.get();
                                 let (dot, txt) = match (m.as_str(), l.as_str()) {
+                                    ("fault", "jito")       => ("bg-red-400",   "Fault injection · Jito Bundle"),
                                     ("fault", _)            => ("bg-red-400",   "Fault injection · Priority Fee"),
                                     ("jupiter", "priority") => ("bg-blue-400",  "Real trade · Priority Fee"),
                                     ("jupiter", _)          => ("bg-purple-400","Real trade · Jito Bundle"),

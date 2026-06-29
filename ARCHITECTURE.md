@@ -31,7 +31,7 @@ graph TD
 flowchart LR
     YS["Yellowstone<br/>gRPC Stream"]
     subgraph ingest ["ingest crate"]
-        SUB["subscriber.rs<br/>slot updates<br/>payer tx filter<br/>Jito tip accounts<br/>pump.fun launches"]
+        SUB["subscriber.rs<br/>slot updates<br/>payer tx filter<br/>Jito tip accounts"]
         BUS["broadcast bus<br/>NetworkEvent"]
     end
     subgraph core ["core crate"]
@@ -175,14 +175,12 @@ flowchart LR
     PUB --> E1["SlotUpdate<br/>slot, parent, commitment"]
     PUB --> E2["TxSeen<br/>sig, slot"]
     PUB --> E3["JitoTip<br/>slot, tip_lamports, ts_ms"]
-    PUB --> E4["NewTokenLaunch<br/>mint, name, symbol, creator"]
     PUB --> E5["Execution<br/>bundle_id, stage, tip, regime"]
     PUB --> E6["ExecLog<br/>bundle_id, level, message"]
 
     E1 --> C1["LeaderClock<br/>slot tracking"]
     E1 --> C2["LifecycleTracker<br/>commitment progression"]
     E3 --> C3["AuctionWindow<br/>tip ingestion"]
-    E4 --> C4["launch feed"]
     E5 --> C5["WebSocket clients"]
     E5 --> C6["bundle replay buffer"]
     E6 --> C5
